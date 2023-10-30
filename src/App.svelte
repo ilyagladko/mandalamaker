@@ -1,8 +1,11 @@
 <script>
 	import P5 from 'p5-svelte';
 	import { saveAs } from 'file-saver';
-	import Range from "./Range.svelte"	
-	
+	import Range from "./Range.svelte";
+	import Fullscreen from "svelte-fullscreen";
+
+	let isFullscreen = false;
+
 	let c = "";
 	let flow = true;
 
@@ -30,6 +33,8 @@
 	let bgcolor = "black";	
 	 let sizeTime = 0;
 	 let colorTime = 0;
+	//  let rewinder = 50;
+	 let rewMul = 0.5;
 
 	let quantity = Math.ceil(Math.random()*10)+2;
 	let ellipses = Math.ceil(Math.random()*8)+1;
@@ -37,14 +42,14 @@
 	let ellipseY = 275;
 	let offsetX = -20;
 	let offsetY = 10;
-	let w = 15;
-	$: weight = w/10;
-	let flowLabel = "flow on";
+	let strokeWidth = 30;
+	$: weight = strokeWidth * strokeWidth * 0.001;
+	let flowLabel = "stop";
 
 	function onFlow() {
 		flow = !flow;
-		flowLabel = flow ? "flow on" : "flow off";
-		console.log(flow)
+		flowLabel = flow ? "stop" : "play";
+		console.log("flow" + flow)
 	}
 	
 	const sketch = (p5) => {
@@ -64,8 +69,8 @@
 		p5.draw = () => {
 			if (flow) {
 
-				sizeTime += sizeSpeed * sizeSpeed * 0.00001;
-				colorTime += colorSpeed * colorSpeed * 0.001;
+				sizeTime += (sizeSpeed * sizeSpeed ) * 0.00001;
+				colorTime += (colorSpeed * colorSpeed) * 0.001;
 			}
 			if (sizeTime > 255) { sizeTime -= 255; }
 			if (colorTime > 255) { colorTime -= 255; }
@@ -199,30 +204,55 @@
 		b2 = Math.ceil(Math.random()*156)+100;
 	}
 
+	const toggleFullscreen = () => {
+    const element = document.documentElement;
+
+    if (!isFullscreen) {
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      } else if (element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+      } else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+      } else if (element.msRequestFullscreen) {
+        element.msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+    }
+
+    isFullscreen = !isFullscreen;
+  };
 
 </script>
-	
+<Fullscreen let:onRequest let:onExit>
 <div class="controls">
 	<div class="row">
-		<Range bind:value={quantity} min={1} max={30} />
+		<Range bind:value={colorSpeed} min={0} max={100} />
+		<Range bind:value={sizeSpeed} min={0} max={100} />
+		<Range bind:value={sizeAmp} min={0} max={100} />
 	</div>
 	<div class="row">
+		<Range bind:value={quantity} min={1} max={30} />
 		<Range bind:value={ellipses} min={1} max={25} />
 	</div>
 	<div class="row">
 		<Range bind:value={ellipseX} min={50} max={500} />
-	</div>
-	<div class="row">
 		<Range bind:value={ellipseY} min={1} max={300} />
 	</div>
 	<div class="row">
+	</div>
+	<div class="row">
 		<Range bind:value={offsetX} min={-100} max={300} />
-	</div>
-	<div class="row">
 		<Range bind:value={offsetY} min={-100} max={300} />
-	</div>
-	<div class="row">
-		<Range bind:value={w} min={5} max={30} />
 	</div>
 	<div class="row">
 		<Range bind:value={h2} min={1} max={255} />
@@ -235,20 +265,27 @@
 		<Range bind:value={b1} min={1} max={254} />
 	</div>
 	<div class="row">
-		<Range bind:value={colorSpeed} min={0} max={100} />
-		<Range bind:value={sizeSpeed} min={0} max={100} />
-		<Range bind:value={sizeAmp} min={0} max={100} />
+		<Range bind:value={strokeWidth} min={10} max={60} />
 	</div>
+	<!-- <div class="row">
+		<Range bind:value={rewinder} min={0} max={100} />
+	</div> -->
 	<div class="butts">
 		<button class="butt" on:click={saveImage}>save</button>
 		<button class="butt" on:click={randomize}>random</button>
 		<!-- <button class="butt" on:click={onFlow}>{flowLabel}</button> -->
+		<button class="butt" on:click={onFlow}>{flowLabel}</button>
+		<button class="butt" on:click={toggleFullscreen}>
+			{isFullscreen ? 'exit' : 'fullscreen'}
+		  </button>
 	</div>
 </div>
 
 <div class="container">
 	<P5 {sketch} />
 </div>
+</Fullscreen>
+
 
 <style>
 	:global(html, body) {
