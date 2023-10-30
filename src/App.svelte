@@ -76,6 +76,8 @@
 			if (colorTime > 255) { colorTime -= 255; }
 
 		p5.noStroke();  
+
+		p5.blendMode(p5.BLEND);
 		p5.fill(bgcolor);
 		p5.rect(0,0,wWidth,wHeight);
 
@@ -102,6 +104,7 @@
 		// 	h1 -= 255;
 		// }
 
+
 		
 		// h1 ++;
 		// if (h1 >= 255) h1 = 0
@@ -109,7 +112,8 @@
 		// if (h2 >= 255) h2 = 0
 
 	//	console.log(h1);
-		
+		p5.blendMode(p5.ADD);
+
 		for (let j = 0; j < quantity; j++) {
 		// 	if(!flow){
 		// 		ellps((ellipseX*mscale),(ellipseY*mscale),ellipses,(offsetX*mscale),(offsetY*mscale),angrot)
@@ -249,8 +253,6 @@
 		<Range bind:value={ellipseY} min={1} max={300} />
 	</div>
 	<div class="row">
-	</div>
-	<div class="row">
 		<Range bind:value={offsetX} min={-100} max={300} />
 		<Range bind:value={offsetY} min={-100} max={300} />
 	</div>
@@ -271,13 +273,13 @@
 		<Range bind:value={rewinder} min={0} max={100} />
 	</div> -->
 	<div class="butts">
-		<button class="butt" on:click={saveImage}>save</button>
-		<button class="butt" on:click={randomize}>random</button>
-		<!-- <button class="butt" on:click={onFlow}>{flowLabel}</button> -->
 		<button class="butt" on:click={onFlow}>{flowLabel}</button>
 		<button class="butt" on:click={toggleFullscreen}>
 			{isFullscreen ? 'exit' : 'fullscreen'}
 		  </button>
+		  <button class="butt" on:click={randomize}>random</button>
+		<button class="butt" on:click={saveImage}>save</button>
+		<!-- <button class="butt" on:click={onFlow}>{flowLabel}</button> -->
 	</div>
 </div>
 
