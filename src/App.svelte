@@ -17,6 +17,10 @@
 	let s2 = Math.ceil(Math.random()*255);
 	let b2 = Math.ceil(Math.random()*55)+200;
 
+	let colorSpeed = 1;
+	let sizeSpeed = 1;
+	let sizeAmp = 1;
+
 	// let h2 = 0;
 	// let s2 = 50;
 	// let b2 = 130;
@@ -24,8 +28,8 @@
 	let wWidth = window.innerWidth;
 	let wHeight = window.innerHeight;
 	let bgcolor = "black";	
-	 let time = 0;
-	 let speed = 0.0002;
+	 let sizeTime = 0;
+	 let colorTime = 0;
 
 	let quantity = Math.ceil(Math.random()*10)+2;
 	let ellipses = Math.ceil(Math.random()*8)+1;
@@ -35,12 +39,11 @@
 	let offsetY = 10;
 	let w = 15;
 	$: weight = w/10;
-	let amp = 250;
 	let flowLabel = "flow off";
 
 	function onFlow() {
 		flow = !flow;
-		flowLabel = flow ? "flow on" : "flow off"; 
+		flowLabel = flow ? "flow on" : "flow off";
 		console.log(flow)
 	}
 	
@@ -59,14 +62,20 @@
 			let col2 = p5.color(h2, s2, b2);
 
 		p5.draw = () => {
-			time += speed;
-			if (time > 255){ time -= 255;}
+			if (flow) {
+
+				sizeTime += sizeSpeed;
+				colorTime += colorSpeed;
+			}
+			if (sizeTime > 255) { sizeTime -= 255; }
+			if (colorTime > 255) { colorTime -= 255; }
+
 		p5.noStroke();  
 		p5.fill(bgcolor);
 		p5.rect(0,0,wWidth,wHeight);
 
-		let sineX = Math.sin(time) * amp;
-		let cosY = Math.cos(time) * amp;
+		let sineX = Math.sin(sizeTime) * sizeAmp;
+		let cosY = Math.cos(sizeTime) * sizeAmp;
 		//ellipseX = sineX;
 		//ellipseY += cosY;
 
@@ -97,9 +106,14 @@
 	//	console.log(h1);
 		
 		for (let j = 0; j < quantity; j++) {
-			//  ellps((ellipseX*mscale),(ellipseY*mscale),ellipses,(offsetX*mscale),(offsetY*mscale),angrot)
+		// 	if(!flow){
+		// 		ellps((ellipseX*mscale),(ellipseY*mscale),ellipses,(offsetX*mscale),(offsetY*mscale),angrot)
+		// 	}
+		// else {
+
 			ellps(((ellipseX + sineX)*mscale),((ellipseY + cosY)*mscale),ellipses,(offsetX*mscale),(offsetY*mscale),angrot)
-			// let add = (j/quantity) + time * 10;
+		// }
+			// let add = (j/quantity) + sizeTime * 10;
 			// ellps(((ellipseX + sineX + Math.sin(add) * amp)*mscale),((ellipseY + cosY + Math.cos(add) * amp)*mscale),ellipses,(offsetX*mscale),(offsetY*mscale),angrot)
    
 			  angrot = angrot + angrotinc;
@@ -115,20 +129,22 @@
 				  /*
 				  // let lerpHue = 
 				  */
-			 if ( flow ) {
+			// if ( flow ) {
 
 					 let he = p5.hue(finColor);
-					 he += time;
+				//	 if(flow){
+						 he += colorTime;
+					// }
 					 if(he > 255)
 					 {
 						 he -= 255;
 						}
 						var finfinColor = p5.color(he,p5.saturation(finColor),p5.brightness(finColor));
 						p5.stroke(finfinColor);
-					 }
-					 else {
-						p5.stroke(finColor);
-					}
+				//	 }
+				//	 else {
+				//		p5.stroke(finColor);
+				//	}
 				
 						p5.push();
 						p5.translate(wWidth*0.5,wHeight*0.5);
@@ -212,6 +228,11 @@
 		<Range bind:value={h2} min={1} max={255} />
 		<Range bind:value={s2} min={1} max={254} />
 		<Range bind:value={b2} min={1} max={254} />
+	</div>
+	<div class="row">
+		<Range bind:value={h1} min={1} max={255} />
+		<Range bind:value={s1} min={1} max={254} />
+		<Range bind:value={b1} min={1} max={254} />
 	</div>
 	<div class="row">
 		<Range bind:value={h1} min={1} max={255} />
