@@ -4,7 +4,7 @@
 	import Range from "./Range.svelte"	
 	
 	let c = "";
-	let flow = false;
+	let flow = true;
 
 	// let h1 = 0;
 	// let s1 = 130;
@@ -17,9 +17,9 @@
 	let s2 = Math.ceil(Math.random()*255);
 	let b2 = Math.ceil(Math.random()*55)+200;
 
-	let colorSpeed = 1;
-	let sizeSpeed = 1;
-	let sizeAmp = 1;
+	let colorSpeed = 10;
+	let sizeSpeed = 20;
+	let sizeAmp = 30;
 
 	// let h2 = 0;
 	// let s2 = 50;
@@ -39,7 +39,7 @@
 	let offsetY = 10;
 	let w = 15;
 	$: weight = w/10;
-	let flowLabel = "flow off";
+	let flowLabel = "flow on";
 
 	function onFlow() {
 		flow = !flow;
@@ -64,8 +64,8 @@
 		p5.draw = () => {
 			if (flow) {
 
-				sizeTime += sizeSpeed;
-				colorTime += colorSpeed;
+				sizeTime += sizeSpeed * sizeSpeed * 0.00001;
+				colorTime += colorSpeed * colorSpeed * 0.001;
 			}
 			if (sizeTime > 255) { sizeTime -= 255; }
 			if (colorTime > 255) { colorTime -= 255; }
@@ -74,8 +74,8 @@
 		p5.fill(bgcolor);
 		p5.rect(0,0,wWidth,wHeight);
 
-		let sineX = Math.sin(sizeTime) * sizeAmp;
-		let cosY = Math.cos(sizeTime) * sizeAmp;
+		let sineX = Math.sin(sizeTime) * sizeAmp * 4;
+		let cosY = Math.cos(sizeTime) * sizeAmp * 4;
 		//ellipseX = sineX;
 		//ellipseY += cosY;
 
@@ -235,14 +235,14 @@
 		<Range bind:value={b1} min={1} max={254} />
 	</div>
 	<div class="row">
-		<Range bind:value={h1} min={1} max={255} />
-		<Range bind:value={s1} min={1} max={254} />
-		<Range bind:value={b1} min={1} max={254} />
+		<Range bind:value={colorSpeed} min={0} max={100} />
+		<Range bind:value={sizeSpeed} min={0} max={100} />
+		<Range bind:value={sizeAmp} min={0} max={100} />
 	</div>
 	<div class="butts">
 		<button class="butt" on:click={saveImage}>save</button>
 		<button class="butt" on:click={randomize}>random</button>
-		<button class="butt" on:click={onFlow}>{flowLabel}</button>
+		<!-- <button class="butt" on:click={onFlow}>{flowLabel}</button> -->
 	</div>
 </div>
 
