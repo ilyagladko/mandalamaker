@@ -9,6 +9,8 @@
 	let c = "";
 	let flow = true;
 
+	
+
 	// let h1 = 0;
 	// let s1 = 130;
 	// let b1 = 130;
@@ -33,8 +35,9 @@
 	let bgcolor = "black";	
 	 let sizeTime = 0;
 	 let colorTime = 0;
-	//  let rewinder = 50;
-	 let rewMul = 0.5;
+	  let rewinder = 100;
+	 let rewMul = 0.0001;
+	 let timeScale = 100;
 
 	let quantity = Math.ceil(Math.random()*10)+2;
 	let ellipses = Math.ceil(Math.random()*8)+1;
@@ -67,13 +70,16 @@
 			let col2 = p5.color(h2, s2, b2);
 
 		p5.draw = () => {
+			let rewFin = rewinder * rewinder * rewMul;
 			if (flow) {
 
-				sizeTime += (sizeSpeed * sizeSpeed ) * 0.00001;
-				colorTime += (colorSpeed * colorSpeed) * 0.001;
+				sizeTime += ((sizeSpeed * sizeSpeed ) * 0.00001) * timeScale * 0.01;
+				colorTime += ((colorSpeed * colorSpeed) * 0.001) * timeScale * 0.01;
 			}
 			if (sizeTime > 255) { sizeTime -= 255; }
+			if (sizeTime < 255) { sizeTime += 255; }
 			if (colorTime > 255) { colorTime -= 255; }
+			if (colorTime < 255) { colorTime += 255; }
 
 		p5.noStroke();  
 
@@ -81,8 +87,8 @@
 		p5.fill(bgcolor);
 		p5.rect(0,0,wWidth,wHeight);
 
-		let sineX = Math.sin(sizeTime) * sizeAmp * 4;
-		let cosY = Math.cos(sizeTime) * sizeAmp * 4;
+		let sineX = Math.sin(sizeTime + rewFin) * sizeAmp * 4;
+		let cosY = Math.cos(sizeTime + rewFin) * sizeAmp * 4;
 		//ellipseX = sineX;
 		//ellipseY += cosY;
 
@@ -142,7 +148,7 @@
 
 					 let he = p5.hue(finColor);
 				//	 if(flow){
-						 he += colorTime;
+						 he += colorTime + rewFin;
 					// }
 					 if(he > 255)
 					 {
@@ -269,9 +275,10 @@
 	<div class="row">
 		<Range bind:value={strokeWidth} min={10} max={60} />
 	</div>
-	<!-- <div class="row">
-		<Range bind:value={rewinder} min={0} max={100} />
-	</div> -->
+	 <div class="row">
+		 <Range bind:value={timeScale} min={-100} max={200} />
+		 <Range bind:value={rewinder} min={0} max={200} />
+	</div> 
 	<div class="butts">
 		<button class="butt" on:click={onFlow}>{flowLabel}</button>
 		<button class="butt" on:click={toggleFullscreen}>
