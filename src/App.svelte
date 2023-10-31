@@ -9,9 +9,6 @@
 	let c = "";
 	let flow = true;
 
-	// let h1 = 0;
-	// let s1 = 130;
-	// let b1 = 130;
 	let h1 = Math.ceil(Math.random()*255);
 	let s1 = Math.ceil(Math.random()*255);
 	let b1 = Math.ceil(Math.random()*55)+200;
@@ -23,18 +20,16 @@
 	let colorSpeed = 10;
 	let sizeSpeed = 20;
 	let sizeAmp = 30;
-
-	// let h2 = 0;
-	// let s2 = 50;
-	// let b2 = 130;
+	let widthSpeed = 10;
+	let widthAmp = 30;
 
 	let wWidth = window.innerWidth;
 	let wHeight = window.innerHeight;
 	let bgcolor = "black";	
 	 let sizeTime = 0;
 	 let colorTime = 0;
-	//  let rewinder = 50;
-	 let rewMul = 0.5;
+	 let widthTime = 0;
+	 let widthWaveMul = 3;
 
 	let quantity = Math.ceil(Math.random()*10)+2;
 	let ellipses = Math.ceil(Math.random()*8)+1;
@@ -70,10 +65,12 @@
 			if (flow) {
 
 				sizeTime += (sizeSpeed * sizeSpeed ) * 0.00001;
-				colorTime += (colorSpeed * colorSpeed) * 0.001;
+				colorTime += (colorSpeed * colorSpeed) * 0.00003;
+				widthTime +=(widthSpeed * widthSpeed) * 0.00003;
 			}
 			if (sizeTime > 255) { sizeTime -= 255; }
 			if (colorTime > 255) { colorTime -= 255; }
+			if (widthTime > 255) { widthTime -= 255; }
 
 		p5.noStroke();  
 
@@ -83,8 +80,6 @@
 
 		let sineX = Math.sin(sizeTime) * sizeAmp * 4;
 		let cosY = Math.cos(sizeTime) * sizeAmp * 4;
-		//ellipseX = sineX;
-		//ellipseY += cosY;
 
 		let angrot = 0.0;
 		let angrotinc = 180.0/quantity;
@@ -95,36 +90,15 @@
 		let mscale = (wHeight) / mellipseY;
   
 		p5.noFill();
-		p5.strokeWeight(weight);
 
 		col1 = p5.color(h1, s1, b1);
 		col2 = p5.color(h2, s2, b2);
 		
-		// if (h1 = 255 || h1 > 255) {
-		// 	h1 -= 255;
-		// }
-
-
-		
-		// h1 ++;
-		// if (h1 >= 255) h1 = 0
-		// h2 ++;
-		// if (h2 >= 255) h2 = 0
-
-	//	console.log(h1);
 		p5.blendMode(p5.ADD);
 
 		for (let j = 0; j < quantity; j++) {
-		// 	if(!flow){
-		// 		ellps((ellipseX*mscale),(ellipseY*mscale),ellipses,(offsetX*mscale),(offsetY*mscale),angrot)
-		// 	}
-		// else {
 
 			ellps(((ellipseX + sineX)*mscale),((ellipseY + cosY)*mscale),ellipses,(offsetX*mscale),(offsetY*mscale),angrot)
-		// }
-			// let add = (j/quantity) + sizeTime * 10;
-			// ellps(((ellipseX + sineX + Math.sin(add) * amp)*mscale),((ellipseY + cosY + Math.cos(add) * amp)*mscale),ellipses,(offsetX*mscale),(offsetY*mscale),angrot)
-   
 			  angrot = angrot + angrotinc;
 		}
 
@@ -134,27 +108,22 @@
 			let nrady = rady;
 
 			  for (let i = 0; i < num; i++) {
-				  var finColor = p5.lerpColor(col1,col2,(i/num));
-				  /*
-				  // let lerpHue = 
-				  */
-			// if ( flow ) {
-
+				 let divider = i/num;
+				  var finColor = p5.lerpColor(col1,col2,divider);
+		
 					 let he = p5.hue(finColor);
-				//	 if(flow){
+			
 						 he += colorTime;
-					// }
+			
 					 if(he > 255)
 					 {
 						 he -= 255;
 						}
+						let width = weight + (Math.sin(widthTime + divider * widthWaveMul) + 1) * weight * widthAmp * 0.01;
+						p5.strokeWeight(width);
 						var finfinColor = p5.color(he,p5.saturation(finColor),p5.brightness(finColor));
 						p5.stroke(finfinColor);
-				//	 }
-				//	 else {
-				//		p5.stroke(finColor);
-				//	}
-				
+			
 						p5.push();
 						p5.translate(wWidth*0.5,wHeight*0.5);
 						p5.rotate(ellprot);
@@ -240,13 +209,13 @@
 <Fullscreen let:onRequest let:onExit>
 <div class="controls">
 	<div class="row">
+		<Range bind:value={quantity} min={1} max={30} />
+		<Range bind:value={ellipses} min={1} max={25} />
+	</div>
+	<div class="row">
 		<Range bind:value={colorSpeed} min={0} max={100} />
 		<Range bind:value={sizeSpeed} min={0} max={100} />
 		<Range bind:value={sizeAmp} min={0} max={100} />
-	</div>
-	<div class="row">
-		<Range bind:value={quantity} min={1} max={30} />
-		<Range bind:value={ellipses} min={1} max={25} />
 	</div>
 	<div class="row">
 		<Range bind:value={ellipseX} min={50} max={500} />
@@ -268,10 +237,13 @@
 	</div>
 	<div class="row">
 		<Range bind:value={strokeWidth} min={10} max={60} />
+		<Range bind:value={widthAmp} min={0} max={100} />
 	</div>
-	<!-- <div class="row">
-		<Range bind:value={rewinder} min={0} max={100} />
-	</div> -->
+	<div class="row">
+		<Range bind:value={widthSpeed} min={0} max={100} />
+		<Range bind:value={widthWaveMul} min={0} max={15} />
+	</div>
+	
 	<div class="butts">
 		<button class="butt" on:click={onFlow}>{flowLabel}</button>
 		<button class="butt" on:click={toggleFullscreen}>
@@ -279,7 +251,7 @@
 		  </button>
 		  <button class="butt" on:click={randomize}>random</button>
 		<button class="butt" on:click={saveImage}>save</button>
-		<!-- <button class="butt" on:click={onFlow}>{flowLabel}</button> -->
+		
 	</div>
 </div>
 
