@@ -30,6 +30,9 @@
 	 let colorTime = 0;
 	 let widthTime = 0;
 	 let widthWaveMul = 3;
+	  let rewinder = 100;
+	 let rewMul = 0.0001;
+	 let timeScale = 100;
 
 	let quantity = Math.ceil(Math.random()*10)+2;
 	let ellipses = Math.ceil(Math.random()*8)+1;
@@ -62,24 +65,27 @@
 			let col2 = p5.color(h2, s2, b2);
 
 		p5.draw = () => {
+			let rewFin = rewinder * rewinder * rewMul;
 			if (flow) {
 
-				sizeTime += (sizeSpeed * sizeSpeed ) * 0.00001;
-				colorTime += (colorSpeed * colorSpeed) * 0.00003;
-				widthTime +=(widthSpeed * widthSpeed) * 0.00003;
+				sizeTime += ((sizeSpeed * sizeSpeed ) * 0.00001) * timeScale * 0.01;
+				colorTime += ((colorSpeed * colorSpeed) * 0.00003) * timeScale * 0.01;
+				widthTime +=((widthSpeed * widthSpeed) * 0.00003)* timeScale * 0.01;
 			}
 			if (sizeTime > 255) { sizeTime -= 255; }
+			if (sizeTime < 255) { sizeTime += 255; }
 			if (colorTime > 255) { colorTime -= 255; }
-			if (widthTime > 255) { widthTime -= 255; }
-
+			if (colorTime < 255) { colorTime += 255; }
+			if (widthTime > 255) { widthTime -= 255;}
+			if (widthTime < 255) { widthTime += 255;}
 		p5.noStroke();  
 
 		p5.blendMode(p5.BLEND);
 		p5.fill(bgcolor);
 		p5.rect(0,0,wWidth,wHeight);
 
-		let sineX = Math.sin(sizeTime) * sizeAmp * 4;
-		let cosY = Math.cos(sizeTime) * sizeAmp * 4;
+		let sineX = Math.sin(sizeTime + fewFin) * sizeAmp * 4;
+		let cosY = Math.cos(sizeTime + rewFin) * sizeAmp * 4;
 
 		let angrot = 0.0;
 		let angrotinc = 180.0/quantity;
@@ -112,9 +118,7 @@
 				  var finColor = p5.lerpColor(col1,col2,divider);
 		
 					 let he = p5.hue(finColor);
-			
-						 he += colorTime;
-			
+						 he += colorTime + rewFin;
 					 if(he > 255)
 					 {
 						 he -= 255;
@@ -244,6 +248,10 @@
 		<Range bind:value={widthWaveMul} min={0} max={15} />
 	</div>
 	
+	 <div class="row">
+		 <Range bind:value={timeScale} min={-100} max={200} />
+		 <Range bind:value={rewinder} min={0} max={200} />
+	</div> 
 	<div class="butts">
 		<button class="butt" on:click={onFlow}>{flowLabel}</button>
 		<button class="butt" on:click={toggleFullscreen}>
